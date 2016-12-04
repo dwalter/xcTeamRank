@@ -58,7 +58,10 @@ def adjustMatrixToUseNet(matrix):
                 matrix[c][r] -= matrix[r][c]
                 matrix[r][c] = 0
 #-------------------------------------------------------------------Team Rank---
-def PageRank(matrix, iterationStep = 15):
+def diff(lst1, lst2):
+    return sum([abs(lst1[i] - lst2[i]) for i in range(len(lst1))])
+#-------------------------------------------------------------------Team Rank---
+def PageRank(matrix, iterationStep = 15, delta=.01):
     # matrix should be normalized
     start = [1.0]*len(matrix)
     i = 1
@@ -67,8 +70,12 @@ def PageRank(matrix, iterationStep = 15):
             #print(start)
             if input('continue? (type "n" to stop) ').strip() == 'n':
                 break
+        nextStart = list(dot(matrix, start))
+        if diff(start, nextStart) < len(start)*delta:
+            print('steady state!')
+            break
+        start = nextStart[:]
         print(sum(start), start)
-        start = list(dot(matrix, start))
         i += 1
     return start
 #======================< GLOBAL STUFFS >============================Team Rank===
