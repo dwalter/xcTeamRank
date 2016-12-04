@@ -19,6 +19,8 @@ def printMatrix(matrix):
     for r in range(len(matrix)):
         print(matrix[r])
 #-------------------------------------------------------------------Team Rank---
+def PageRank(matrix):
+    
 
 #======================< GLOBAL STUFFS >============================Team Rank===
 
