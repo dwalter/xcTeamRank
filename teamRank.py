@@ -81,13 +81,13 @@ def main():
 
     printMatrix(weightedVictoryGraph)
     print()
-    adjustForNumMeets(weightedVictoryGraph)
+    adjustForNumMeets(weightedVictoryGraph) # remove advantage for competing more (and thus giving away more of your points)
     printMatrix(weightedVictoryGraph)
     print()
-    normalizeMatrix(weightedVictoryGraph)
+    normalizeMatrix(weightedVictoryGraph) # so the total number of points is constant
     printMatrix(weightedVictoryGraph)
     print()
-    addFudgeFactor(weightedVictoryGraph, .1)
+    addFudgeFactor(weightedVictoryGraph, .1) # fixes problem of undefeated teams and smoothes values a bit
     printMatrix(weightedVictoryGraph)
     print()
 
