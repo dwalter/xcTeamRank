@@ -17,7 +17,8 @@ def retrieveAndInputData():
     #                         [1,0,2,2],
     #                         [0,1,0,4],
     #                         [0,1,2,0]]
-    weightedVictoryGraph = [list(elt) for elt in transpose(weightedVictoryGraph)] # now lowest score is best and poeple point to people they beat
+    weightedVictoryGraph = [list(elt) for elt in transpose(weightedVictoryGraph)]
+    # now lowest score is best and poeple point to people they beat
     return regionsAndTeams , weightedVictoryGraph
 #-------------------------------------------------------------------Team Rank---
 def printMatrix(matrix):
@@ -69,6 +70,7 @@ def PageRank(matrix, iterationStep = 15):
         print(sum(start), start)
         start = list(dot(matrix, start))
         i += 1
+    return start
 #======================< GLOBAL STUFFS >============================Team Rank===
 
 #===============================< MAIN >========================================
@@ -91,7 +93,13 @@ def main():
     printMatrix(weightedVictoryGraph)
     print()
 
-    PageRank(weightedVictoryGraph)
+    results = PageRank(weightedVictoryGraph)
+
+    results = zip(results, regionsAndTeams['r1'])
+
+    results = sorted(results)
+    printMatrix(results)
+
 
 #-------------------------------------------------------------------Team Rank---
 if __name__ == '__main__': from time import clock; START_TIME = clock();  main(); \
