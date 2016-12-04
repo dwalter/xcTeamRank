@@ -6,11 +6,18 @@
 
 ###################################START OF PROGRAM#############################
 #-------------------------------------------------------------------Team Rank---
-def retrieveAndInputData(regionsAndTeams, weightedVictoryGraph):
-	testm = [[]]
-
+def retrieveAndInputData():
+    regionsAndTeams = dict()
+    regionsAndTeams['r1'] = ['MIT','Tufts','Williams','TJ',]
+    weightedVictoryGraph = [[0,2,1,0],
+                            [0,0,1,0],
+                            [1,1,0,0],
+                            [1,1,1,0]]
+    return regionsAndTeams , weightedVictoryGraph
 #-------------------------------------------------------------------Team Rank---
-
+def printMatrix(matrix):
+    for r in range(len(matrix)):
+        print(matrix[r])
 #-------------------------------------------------------------------Team Rank---
 
 #======================< GLOBAL STUFFS >============================Team Rank===
@@ -21,9 +28,10 @@ def main():
     regionsAndTeams = dict() # [name of region]:[list of top 16 teams in that region, in order]
     weightedVictoryGraph = [] # how many times team [r] beat team [c]
 
-    retrieveAndInputData(regionsAndTeams, weightedVictoryGraph)
+    regionsAndTeams , weightedVictoryGraph = retrieveAndInputData()
 
-    
+    printMatrix(weightedVictoryGraph)
+
 
 
 
