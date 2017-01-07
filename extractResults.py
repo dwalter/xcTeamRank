@@ -9,6 +9,8 @@
 import urllib2
 from bs4 import BeautifulSoup
 
+import numpy as np
+
 
 '''
 
@@ -170,7 +172,11 @@ class ResultsExtract:
                             continue
 
                         meet_date = columns[0].get_text()
-                        if meet_data
+                        month = int(meet_date[0:2])
+                        day = (meet_date[3:5])
+                        year = (meet_date[6:8])
+                        if not self.is_valid_late_season_date(month, day, year):
+                            continue 
                         try:
                             team_url = 'https:'+ columns[1].findAll(href=True)[0]['href']
                         except IndexError: # this happens if the result is not a regional results page
@@ -184,6 +190,29 @@ class ResultsExtract:
 
 
 
+    def is_valid_late_season_date(month, day, year):
+        """
+        month: integer from 1 to 12
+        day: integer from 1 to 31
+        year: integer from 0 t0 99 (for example, 16 represents 2016)
+        """
+        start_month = int(self.late_season_start_date[0:2])
+        start_day = int(self.late_season_start_date[3:5])
+        start_year = int(self.late_season_start_date[6:8])
+        end_month = int(self.d3_regionals_dates[0][0:2])
+        end_day = int(self.d3_regionals_dates[0][3:5])
+        end_year = int(self.d3_regionals_dates[0][6:8])
+        if not year == start_year:
+            return False
+        if not (start_month <= month <= end_month):
+            return False
+        if month == start_month:
+            if not start_day <= day:
+                return False
+        if month == end_month:
+            if not end_day > day:
+                return False
+        return True
 
 
 
