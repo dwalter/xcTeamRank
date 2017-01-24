@@ -1,4 +1,5 @@
-#python file extracting data from xc.tfrrs
+#
+python file extracting data from xc.tfrrs
 # Author: David Walter
 # Date: 12-03-2016
 
@@ -16,19 +17,19 @@ import numpy as np
 
 - Need to go through all of the late season results
 - Need to know which teams are in which region
-- Need to 
+- Need to
 
 '''
 
 class ResultsExtract:
     """ Class that handles most of the web crawling of results on xc.tfrrs.org
-        attributes: 
+        attributes:
         - results_url: https://xc.tfrrs.org/results_search.html
         - d3_regional_dates: list of the date(s) of Div.3 Regional meets,
-            must be at least length 1, in format (month)/(day)/year in 
+            must be at least length 1, in format (month)/(day)/year in
             format mm/dd/yyyy, ex: 01/31/1999
         - visited results: list of urls of results that the program has already
-            visited, as to not recount results multiple times. 
+            visited, as to not recount results multiple times.
     """
     def __init__(self):
         self.results_url = 'https://xc.tfrrs.org/results_search.html'
@@ -38,11 +39,15 @@ class ResultsExtract:
         self.pager_links = self.get_main_results_pager_links()
 
     def fix_url(self, url):
+        ''' Returns a url string without a substring  '/' in the first position.
+        '''
         if url[0] == '/':
             url = 'https:' + url
         return url
 
     def get_html(self, url):
+        ''' Returns the html text from the url.
+        '''
         hdr = {'User-Agent':'Mozilla/5.0'} 
         req = urllib2.Request(url, headers=hdr)
         results_page = urllib2.urlopen(req)
@@ -51,19 +56,19 @@ class ResultsExtract:
 
     def crawl_main_results(self, url = '', page_number=-1):
         '''
-        returns: an n by 3 python list, where every list within the list has
+        Returns: an n by 3 python list, where every list within the list has
             [meet_date, meet_name, meet_url] for the Div. 3 regional meets. 
 
         '''
         if url == '':
-            url = self.results_url
+            url = self.results_url # the default url
         if url[0] == '/':
             url = 'https:' + url
         results_html = self.get_html(url)
 
         soup = BeautifulSoup(results_html)
         tables = soup.findAll('table')
-        table = tables[2]
+        table = tables[2] #this is NOT very robust 
         all_rows = table.findAll('tr')
         table_data = []
 
@@ -82,12 +87,16 @@ class ResultsExtract:
             new_page_num = page_number + 1
             new_url = self.pager_links[new_page_num]
             table_data = self.crawl_main_results(new_url, new_page_num)
-        # print table_data
+
+        for data_row in table_data:
+            assert len(data_row) == 3
 
         return table_data
-            
+
 
     def get_main_results_pager_links(self, url=''):
+        ''' Returns the list of url links needed for all regional results. 
+        '''
         if url == '':
             url = self.results_url
         results_html = self.get_html(url)
@@ -102,6 +111,15 @@ class ResultsExtract:
 
 
     def crawl_regional_results(self, main_table_data):
+        ''' Crawls over each Regional results page.
+            Returns a tuple. The first element in the tuple is the Men's
+                Regional results data from the table on TFRRS. This Table is a
+                list of lists, in each row containing:
+                    - team name: a string
+                    - team url: a string
+                The second element is the Women's Reginal Results data.
+                Formatted identically to the Men's Regional Results. 
+        '''
         regional_results_men = []
         regional_results_women = []
         for region in main_table_data:
@@ -117,7 +135,7 @@ class ResultsExtract:
             avg_times_both_genders = []
             for table in team_html_tables:
                 team_data_table = []
-                avg_times = []
+                avg_times = [] # used to distinguish mens and womens genders. 
                 all_rows = table.findAll('tr')
                 for row in all_rows:
                     columns = row.findAll('td', {'class': 'tableText'})
@@ -153,6 +171,10 @@ class ResultsExtract:
 
 
     def crawl_team_results(self, regional_results_men, regional_results_women, late_season_start_date):
+        ''' Goes over the results from each team's TFRRS website.
+                regional_results_men and regional_results_women are returned in the
+                tuple from crawl_regional_results. 
+        '''
         for gender in [regional_results_men, regional_results_women]:
             visited_urls = []
             for region in gender:
@@ -164,7 +186,7 @@ class ResultsExtract:
                     team_html = self.get_html(team_url)
                     soup = BeautifulSoup(team_html)
                     tables = soup.findAll('table')
-                    results_table = tables[5]
+                    results_table = tables[5] # this is a hack and not very robust
                     all_rows = results_table.findAll('tr')
                     for row in all_rows:
                         columns = row.findAll('td', {'class': 'tableText'})
